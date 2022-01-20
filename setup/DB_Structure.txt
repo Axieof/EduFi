@@ -1,0 +1,9 @@
+semester_end (string)
+module_code (object)
+- classe_code (array)
+  - student (object)
+   - student_id (string)
+   - tutor_id (string)
+   - mark (string)
+   - dateupdated (string)
+   

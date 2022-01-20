@@ -1,0 +1,87 @@
+{
+    "semester_end": "21-01-2022",
+    "ADB": {
+        "ADB001": [
+            {
+                "studentID": "S0001",
+                "tutorID": "T0001",
+                "mark": "90",
+                "dateUpdated": "19-01-2022"
+            },
+            {
+                "studentID": "S0002",
+                "tutorID": "T0001",
+                "mark": "91",
+                "dateUpdated": "19-01-2022"
+            },
+            {
+                "studentID": "S0003",
+                "tutorID": "T0001",
+                "mark": "14",
+                "dateUpdated": "19-01-2022"
+            }
+        ],
+        "ADB002": [
+            {
+                "studentID": "S0005",
+                "tutorID": "T0002",
+                "mark": "70",
+                "dateUpdated": "19-01-2022"
+            },
+            {
+                "studentID": "S0006",
+                "tutorID": "T0002",
+                "mark": "41",
+                "dateUpdated": "19-01-2022"
+            },
+            {
+                "studentID": "S0007",
+                "tutorID": "T0002",
+                "mark": "19",
+                "dateUpdated": "19-01-2022"
+            }
+        ]
+    },
+    "ETI": {
+        "ETI001": [
+            {
+                "studentID": "S0001",
+                "tutorID": "T0003",
+                "mark": "93",
+                "dateUpdated": "19-01-2022"
+            },
+            {
+                "studentID": "S0002",
+                "tutorID": "T0003",
+                "mark": "25",
+                "dateUpdated": "19-01-2022"
+            },
+            {
+                "studentID": "S0003",
+                "tutorID": "T0003",
+                "mark": "74",
+                "dateUpdated": "19-01-2022"
+            }
+        ],
+        "ETI002": [
+            {
+                "studentID": "S0005",
+                "tutorID": "T0004",
+                "mark": "49",
+                "dateUpdated": "19-01-2022"
+            },
+            {
+                "studentID": "S0006",
+                "tutorID": "T0004",
+                "mark": "51",
+                "dateUpdated": "19-01-2022"
+            },
+            {
+                "studentID": "S0007",
+                "tutorID": "T0004",
+                "mark": "23",
+                "dateUpdated": "19-01-2022"
+            }
+        ]
+    }
+}
