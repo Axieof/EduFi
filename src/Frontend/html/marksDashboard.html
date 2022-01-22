@@ -1,0 +1,19 @@
+<h1>Welcome {{ .name }}!</h1>
+<h2>{{ .tutorID }}</h2>
+
+{{ range .ModulesList}}
+<h1>{{ .moduleName}}</h1>
+
+    {{ range .ClassesList}}
+    <table>
+        <tr>
+            <th>{{ .classCode }}</th>
+        </tr>
+        {{ range .StudentsList}}
+        <tr>
+            <td>{{ .studentName }}</td>
+            <td>{{ .studentID }}</td>
+            <td><button>Enter Marks</button></td>
+        </tr>
+
+    </table>
