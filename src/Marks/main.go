@@ -1,8 +1,12 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"net/http"
+	"os"
+	"os/signal"
+	"time"
 
 	"github.com/labstack/echo/v4"
 )
@@ -45,9 +49,26 @@ func main() {
 	fmt.Println("HTTP Server Created")
 
 	//Group API version one routes together
-	g := e.Group("marksDashboard")
+	g := e.Group("/api/V1")
 
 	g.GET("/:tutorID", marksDashboard)
 	g.POST("/marksSubmit", marksSubmit)
+
+	// Use goroutine to run http server synchronoulsy with other functions
+	go func() {
+		if err := e.Start(":8121"); err != nil && err != http.ErrServerClosed {
+			e.Logger.Fatal("Shutting down the server")
+		}
+	}()
+
+	//Gracefully shutdown the server if an error happens
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, os.Interrupt)
+	<-quit
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	if err := e.Shutdown(ctx); err != nil {
+		e.Logger.Fatal(err)
+	}
 
 }
