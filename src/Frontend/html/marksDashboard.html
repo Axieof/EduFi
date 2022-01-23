@@ -1,19 +1,49 @@
-<h1>Welcome {{ .name }}!</h1>
-<h2>{{ .tutorID }}</h2>
+<h1>Welcome {{ .Name }}!</h1>
+<h2>{{ .TutorID }}</h2>
 
-{{ range .ModulesList}}
-<h1>{{ .moduleName}}</h1>
+<table>
+    <tr>
+        <th>Modules Taught</th>
+    </tr>
+    {{ range .ModulesList}}
+    <tr>
+        <td>{{.ModuleCode}}</td>
+        <td>{{.ModuleName}}</td>
+    </tr>
+    {{end}}
+</table>
 
-    {{ range .ClassesList}}
-    <table>
-        <tr>
-            <th>{{ .classCode }}</th>
-        </tr>
-        {{ range .StudentsList}}
-        <tr>
-            <td>{{ .studentName }}</td>
-            <td>{{ .studentID }}</td>
-            <td><button>Enter Marks</button></td>
-        </tr>
+<table>
+    <tr>
+        <th>Classes Taught</th>
+    </tr>
+    {{range .ClassesList}}
+    <tr>
+        <td>{{.ClassCode}}</td>
+        <td>{{.Schedule}}</td>
+        <td>{{.Capacity}}</td>
+    </tr>
+    {{end}}
+</table>
 
-    </table>
+<table>
+    <tr>
+        <th>Students</th>
+    </tr>
+    {{ range .StudentsList}}
+    <tr>
+        <td>{{.ModuleEnrolled}}</td>
+        <td>{{.ClassForModule}}</td>
+        <td>{{.StudentID}}</td>
+        <td>{{.StudentName}}</td>
+        <td>{{.DOB}}</td>
+        <td>{{.PhoneNumber}}</td>
+        <td>
+            <form action="http://localhost:8120/api/V1/marksEntry/:{{.StudentID}}" method="POST">
+                <input type="text" placeholder="Marks" name="Marks">
+                <a><input class="submit" type="submit" value="Submit"></a>
+            </form>
+        </td>
+    </tr>
+    {{end}}
+</table>
