@@ -2,24 +2,35 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
+	"reflect"
 	"time"
 
 	"github.com/labstack/echo/v4"
-	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type StudentMarks struct {
-	StudentID   string
-	TutorID     string
-	Mark        string
-	dateUpdated string
+	StudentID   string `json: StudentID`
+	StudentName string `json: StudentName`
+	DOB         string `json: DOB`
+	Address     string `json: Address`
+	PhoneNumber string `json: PhoneNumber`
+	Schedule    string `json: Schedule`
+	TutorID     string `json: TutorID`
+	Mark        string `json: Mark`
+	dateUpdated string `json: dateUpdated`
+}
+
+type DatabaseClient struct {
+	Client  mongo.Client
+	Context context.Context
 }
 
 func generateNextSemStartDate() time.Time {
@@ -43,22 +54,54 @@ func ServeHeader(next echo.HandlerFunc) echo.HandlerFunc {
 	}
 }
 
-func main() {
+func postMarks(c echo.Context) error {
 
-	fmt.Println("Starting Database Service")
+	StudentMarkEntry := StudentMarks{}
 
-	//Create Echo HTTP Server
-	e := echo.New()
-	//Use custom server header dispalying applciation version
-	e.Use(ServeHeader)
-	fmt.Println("HTTP Server Created")
+	defer c.Request().Body.Close()
+	err := json.NewDecoder(c.Request().Body).Decode(&StudentMarkEntry)
 
-	fmt.Println(generateNextSemStartDate())
-	fmt.Println(generateNextSemEndDate(generateNextSemStartDate()))
+	if err != nil {
+		log.Fatalf("Failed reading the request body %s", err)
+	} else {
+		DBClient := connectToDB()
 
-	//Group API version one routes together
-	//g := e.Group("/api/V1")
+		currentSemester := StudentMarkEntry.Schedule
 
+		StudentMarkscollection := DBClient.Client.Database("StudentMarks").Collection(currentSemester)
+
+		/*
+			doc, err := toBSON(StudentMarkEntry)
+			if err != nil {
+				log.Fatalf("Error in converting to bson %s", err)
+			}
+		*/
+
+		result, err := StudentMarkscollection.InsertOne(DBClient.Context, StudentMarkEntry)
+		if err != nil {
+			fmt.Println("An error occured %s", err)
+		} else {
+			fmt.Println("Insert result type: ", reflect.TypeOf(result))
+			fmt.Println("Insert APi result: ", result)
+		}
+	}
+
+	return c.String(http.StatusOK, "Marks Entered into DB")
+}
+
+/*
+func toBSON(v interface{}) (doc *bson.Document, err error) {
+	data, err := bson.Marshal(v)
+	if err != nil {
+		return
+	}
+
+	err = bson.UnMarshal(data, &doc)
+	return
+}
+*/
+
+func connectToDB() DatabaseClient {
 	credential := options.Credential{
 		Username: "admin",
 		Password: "admin",
@@ -75,17 +118,31 @@ func main() {
 		log.Fatal(err)
 	}
 
-	databases, err := client.ListDatabaseNames(ctx, bson.M{})
-	if err != nil {
-		log.Fatal(err)
+	DBClient := DatabaseClient{
+		Client:  *client,
+		Context: ctx,
 	}
 
-	fmt.Println(databases)
+	return DBClient
+}
 
-	currentSemester := "17-01-2022"
+func main() {
 
-	collection := client.Database("StudentMarks").Collection(currentSemester)
-	fmt.Println(collection)
+	fmt.Println("Starting Database Service")
+
+	//Create Echo HTTP Server
+	e := echo.New()
+	//Use custom server header dispalying applciation version
+	e.Use(ServeHeader)
+	fmt.Println("HTTP Server Created")
+
+	fmt.Println(generateNextSemStartDate())
+	fmt.Println(generateNextSemEndDate(generateNextSemStartDate()))
+
+	//Group API version one routes together
+	g := e.Group("/api/V1")
+
+	g.POST("/database/postMarks", postMarks)
 
 	// Use goroutine to run http server synchronoulsy with other functions
 	go func() {

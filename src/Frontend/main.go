@@ -260,6 +260,8 @@ func marksEntry(c echo.Context) error {
 	postBody, _ := json.Marshal(map[string]string{
 		"StudentID": studentID,
 		"Marks":     marksEntered,
+		"Schedule":  "17-01-2022",
+		"TutorID":   "T0001",
 	})
 
 	responsebody := bytes.NewBuffer(postBody)
