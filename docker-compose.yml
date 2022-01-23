@@ -1,0 +1,37 @@
+version: '3'
+
+services:
+  frontend:
+    build: 
+      context: ./src/Frontend
+    container_name: MarksEntryFrontend
+    ports:
+      - 8120:8080
+
+  marks:
+    build:
+      context: ./src/Marks
+    container_name: MarksEntryMarks
+    ports:
+      - 8121:8080
+
+  database:
+    build: 
+      context: ./src/Database
+    container_name: MarksEntryDatabase
+    ports:
+      - 8129:8080
+
+  marksmongodb:
+    image: mongo:4.4.6
+    container_name: marksmongodb
+    ports:
+      - 8128:27017
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=admin
+    volumes:
+      - mongo-data:/data/db
+
+volumes:
+  mongo-data:

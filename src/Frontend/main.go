@@ -19,7 +19,7 @@ import (
 
 //var tutorRoute string = "http://localhost:803?/"
 //var moduleRoute string = "http://localhost:811?/"
-var marksEntryRoute string = "http://localhost:8121/api/V1/marksSubmit"
+var marksEntryRoute string = "http://marks:8121/api/V1/marksSubmit"
 
 type TemplateRenderer struct {
 	templates *template.Template
@@ -266,7 +266,7 @@ func marksEntry(c echo.Context) error {
 
 	responsebody := bytes.NewBuffer(postBody)
 
-	url := "http://localhost:8121/api/V1/marksSubmit/" + studentID
+	url := "http://marks:8121/api/V1/marksSubmit/" + studentID
 
 	resp, err := http.Post(url, "application/json", responsebody)
 

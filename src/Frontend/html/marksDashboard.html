@@ -39,7 +39,7 @@
         <td>{{.DOB}}</td>
         <td>{{.PhoneNumber}}</td>
         <td>
-            <form action="http://localhost:8120/api/V1/marksEntry/:{{.StudentID}}" method="POST">
+            <form action="http://frontend:8120/api/V1/marksEntry/:{{.StudentID}}" method="POST">
                 <input type="text" placeholder="Marks" name="Marks">
                 <a><input class="submit" type="submit" value="Submit"></a>
             </form>
