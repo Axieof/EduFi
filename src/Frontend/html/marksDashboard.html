@@ -1,3 +1,14 @@
+<head>
+    <style>
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+            padding: 10px;
+        }
+    </style>
+</head>
+
+
 <h1>Welcome {{ .Name }}!</h1>
 <h2>{{ .TutorID }}</h2>
 
@@ -30,14 +41,19 @@
     <tr>
         <th>Students</th>
     </tr>
+    <tr>
+        <th>Module Code</th>
+        <th>Class Code</th>
+        <th>Student ID</th>
+        <th>Student Name</th>
+        <th>Enter Marks</th>
+    </tr>
     {{ range .StudentsList}}
     <tr>
         <td>{{.ModuleEnrolled}}</td>
         <td>{{.ClassForModule}}</td>
         <td>{{.StudentID}}</td>
         <td>{{.StudentName}}</td>
-        <td>{{.DOB}}</td>
-        <td>{{.PhoneNumber}}</td>
         <td>
             <form action="http://localhost:8120/api/V1/marksEntry/:{{.StudentID}}" method="POST">
                 <input type="text" placeholder="Marks" name="Marks">
