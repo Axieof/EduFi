@@ -59,7 +59,7 @@
         <td>{{.StudentID}}</td>
         <td>{{.StudentName}}</td>
         <td>
-            <form action="http://localhost:8120/marksEntry/:{{.StudentID}}" method="POST">
+            <form action="http://localhost:8120/marksEntry/{{.StudentID}}" method="POST">
                 <input type="text" placeholder="Marks" name="Marks">
                 <a><input class="submit" type="submit" value="Submit"></a>
             </form>
