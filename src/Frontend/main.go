@@ -306,12 +306,9 @@ func main() {
 
 	fmt.Println("Server Renderer Initialized")
 
-	//Group API version one routes together
-	g := e.Group("/api/V1")
-
 	// Routes the server is handling
-	g.GET("/marksDashboard/:tutorID", marksDashboard)
-	g.POST("/marksEntry/:studentID", marksEntry)
+	e.GET("/marksDashboard/:tutorID", marksDashboard)
+	e.POST("/marksEntry/:studentID", marksEntry)
 
 	// Use goroutine to run http server synchronoulsy with other functions
 	go func() {
