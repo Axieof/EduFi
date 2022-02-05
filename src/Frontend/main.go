@@ -87,6 +87,19 @@ func ServeHeader(next echo.HandlerFunc) echo.HandlerFunc {
 	}
 }
 
+func generateNextSemStartDate() time.Time {
+	var currentDate = time.Now()
+	var daysUntilMon = (1 - int(currentDate.Weekday()) + 7) % 7
+	var semStartDate = currentDate.AddDate(0, 0, daysUntilMon)
+
+	return semStartDate
+}
+
+func generateNextSemEndDate(semStartDate time.Time) time.Time {
+	semEndDate := semStartDate.AddDate(0, 0, 4)
+	return semEndDate
+}
+
 // Handles the get endpoint http://localhost:8120/api/V1/marksDashboard/:tutorID
 func marksDashboard(c echo.Context) error {
 
@@ -260,7 +273,7 @@ func marksEntry(c echo.Context) error {
 	postBody, _ := json.Marshal(map[string]string{
 		"StudentID": studentID,
 		"Marks":     marksEntered,
-		"Schedule":  "17-01-2022",
+		"Schedule":  "31-01-2022",
 		"TutorID":   "T0001",
 	})
 

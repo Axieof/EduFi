@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/labstack/echo/v4"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -46,12 +47,44 @@ func generateNextSemEndDate(semStartDate time.Time) time.Time {
 	return semEndDate
 }
 
+func getCurrentSemStart() time.Time {
+	var nowdate = time.Now()
+	var nowint = int(nowdate.Weekday())
+	var current = nowint - 1
+	var after = nowdate.AddDate(0, 0, -current)
+
+	fmt.Println("Current sem start is: ", after)
+
+	return after
+}
+
 func ServeHeader(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		c.Response().Header().Set(echo.HeaderServer, "Uni_LMS_Marks_Entry/1.0")
 
 		return next(c)
 	}
+}
+
+func checkCollectionExists(semester string) bool {
+	DBClient := connectToDB()
+
+	names, err := DBClient.Client.Database("StudentMarks").ListCollectionNames(DBClient.Context, bson.D{{"options.capped", true}})
+	if err != nil {
+		log.Printf("Failed to get collection names: %v", err)
+		return false
+	}
+
+	for _, name := range names {
+		if name == semester {
+			log.Printf("The Collection exists!")
+			return true
+		} else {
+			return false
+		}
+	}
+
+	return false
 }
 
 func postMarks(c echo.Context) error {
@@ -68,14 +101,15 @@ func postMarks(c echo.Context) error {
 
 		currentSemester := StudentMarkEntry.Schedule
 
-		StudentMarkscollection := DBClient.Client.Database("StudentMarks").Collection(currentSemester)
+		fmt.Println(currentSemester)
 
-		/*
-			doc, err := toBSON(StudentMarkEntry)
-			if err != nil {
-				log.Fatalf("Error in converting to bson %s", err)
-			}
-		*/
+		colExists := checkCollectionExists(currentSemester)
+
+		if !colExists {
+			DBClient.Client.Database("StudentMarks").CreateCollection(DBClient.Context, currentSemester)
+		}
+
+		StudentMarkscollection := DBClient.Client.Database("StudentMarks").Collection(currentSemester)
 
 		result, err := StudentMarkscollection.InsertOne(DBClient.Context, StudentMarkEntry)
 		if err != nil {
@@ -126,6 +160,14 @@ func connectToDB() DatabaseClient {
 	return DBClient
 }
 
+func checkNewSem(prevsem time.Time, cursem time.Time) time.Time {
+	if prevsem != cursem {
+		prevsem = cursem
+	}
+
+	return prevsem
+}
+
 func main() {
 
 	fmt.Println("Starting Database Service")
@@ -149,6 +191,22 @@ func main() {
 		if err := e.Start(":8129"); err != nil && err != http.ErrServerClosed {
 			e.Logger.Fatal("Shutting down the server")
 		}
+	}()
+
+	previoussemester := time.Now()
+	currentsemesterchan := make(chan time.Time)
+	currentsemester := <-currentsemesterchan
+
+	go func() {
+		currentsem := getCurrentSemStart()
+		currentsemesterchan <- currentsem
+	}()
+
+	previoussemester = checkNewSem(previoussemester, currentsemester)
+
+	go func() {
+		fmt.Println(currentsemester)
+		fmt.Println(previoussemester)
 	}()
 
 	//Gracefully shutdown the server if an error happens
