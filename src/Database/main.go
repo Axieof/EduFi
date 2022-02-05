@@ -107,7 +107,7 @@ func connectToDB() DatabaseClient {
 		Password: "admin",
 	}
 
-	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://0.0.0.0:8059").SetAuth(credential))
+	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://0.0.0.0:8128").SetAuth(credential))
 	if err != nil {
 		log.Fatal(err)
 	}

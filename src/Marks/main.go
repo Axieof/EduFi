@@ -80,7 +80,7 @@ func marksSubmit(c echo.Context) error {
 			"DOB":         tempStudent.DOB,
 			"Address":     tempStudent.Address,
 			"PhoneNumber": tempStudent.PhoneNumber,
-			"Marks":       StudentMark.Marks,
+			"Mark":        StudentMark.Marks,
 			"Schedule":    StudentMark.Schedule,
 			"TutorID":     StudentMark.TutorID,
 		})
@@ -106,7 +106,7 @@ func marksSubmit(c echo.Context) error {
 		fmt.Println(sb)
 	}
 
-	return c.String(http.StatusOK, "Test")
+	return c.String(http.StatusOK, "Marks Entered")
 
 	// TODO
 	// Post to database and receive reply
