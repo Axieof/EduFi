@@ -168,6 +168,12 @@ func checkNewSem(prevsem time.Time, cursem time.Time) time.Time {
 	return prevsem
 }
 
+func checkAPI(c echo.Context) error {
+	fmt.Println("Database Service has been pinged!")
+	fmt.Println("Sending reply...")
+	return c.String(http.StatusOK, "Service is up and running")
+}
+
 func main() {
 
 	fmt.Println("Starting Database Service")
@@ -185,6 +191,7 @@ func main() {
 	g := e.Group("/api/V1")
 
 	g.POST("/database/postMarks", postMarks)
+	g.GET("/checkapi", checkAPI)
 
 	// Use goroutine to run http server synchronoulsy with other functions
 	go func() {

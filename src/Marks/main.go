@@ -114,6 +114,12 @@ func marksSubmit(c echo.Context) error {
 	return c.String(http.StatusOK, "Posting Marks for StudentID:"+studentID)
 }
 
+func checkAPI(c echo.Context) error {
+	fmt.Println("Marks Service has been pinged!")
+	fmt.Println("Sending reply...")
+	return c.String(http.StatusOK, "Service is up and running")
+}
+
 func main() {
 
 	fmt.Println("Starting Marks Entry Service")
@@ -129,6 +135,7 @@ func main() {
 
 	g.GET("/:tutorID", marksDashboard)
 	g.POST("/marksSubmit/:studentID", marksSubmit)
+	g.GET("/checkapi", checkAPI)
 
 	// Use goroutine to run http server synchronoulsy with other functions
 	go func() {

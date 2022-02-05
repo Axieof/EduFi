@@ -300,6 +300,12 @@ func marksEntry(c echo.Context) error {
 	return c.String(http.StatusOK, "Test")
 }
 
+func checkAPI(c echo.Context) error {
+	fmt.Println("Frontend Service has been pinged!")
+	fmt.Println("Sending reply...")
+	return c.String(http.StatusOK, "Service is up and running")
+}
+
 func main() {
 
 	fmt.Println("Starting Frontend Service")
@@ -322,6 +328,7 @@ func main() {
 	// Routes the server is handling
 	e.GET("/marksDashboard/:tutorID", marksDashboard)
 	e.POST("/marksEntry/:studentID", marksEntry)
+	e.GET("/checkapi", checkAPI)
 
 	// Use goroutine to run http server synchronoulsy with other functions
 	go func() {
