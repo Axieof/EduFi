@@ -40,13 +40,6 @@ func ServeHeader(next echo.HandlerFunc) echo.HandlerFunc {
 	}
 }
 
-func marksDashboard(c echo.Context) error {
-	tutorID := c.Param("tutorID")
-	fmt.Println("Tutor ID received: " + tutorID)
-
-	return c.String(http.StatusOK, "Marks Dashboard Accessed")
-}
-
 func marksSubmit(c echo.Context) error {
 	studentID := c.Param("studentID")
 	fmt.Println("Posting marks for Student:" + studentID)
@@ -133,7 +126,6 @@ func main() {
 	//Group API version one routes together
 	g := e.Group("/api/V1")
 
-	g.GET("/:tutorID", marksDashboard)
 	g.POST("/marksSubmit/:studentID", marksSubmit)
 	g.GET("/checkapi", checkAPI)
 
