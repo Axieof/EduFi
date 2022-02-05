@@ -9,10 +9,12 @@ import (
 	"os"
 	"os/signal"
 	"reflect"
+	"strings"
 	"time"
 
 	"github.com/labstack/echo/v4"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -87,6 +89,47 @@ func checkCollectionExists(semester string) bool {
 	return false
 }
 
+func sliceToString(values []primitive.M) string {
+	s := make([]string, len(values)) // Pre-allocate the right size
+	for index := range values {
+		s[index] = fmt.Sprintf("%v", values[index])
+	}
+	return strings.Join(s, ",")
+}
+
+func checkStudentExists(studentID string, collection string) string {
+	DBClient := connectToDB()
+
+	coll := DBClient.Client.Database("StudentMarks").Collection(collection)
+
+	// Find all documents in which the "name" field is "Bob".
+	// Specify the Sort option to sort the returned documents by age in
+	// ascending order.
+	//opts := options.Find().SetSort(bson.D{{"studentid", studentID}})
+	cursor, err := coll.Find(DBClient.Context, bson.D{{"studentid", studentID}})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Get a list of all returned documents and print them out.
+	// See the mongo.Cursor documentation for more examples of using cursors.
+	var results []bson.M
+	if err = cursor.All(DBClient.Context, &results); err != nil {
+		log.Fatal(err)
+	}
+	for _, result := range results {
+		fmt.Println("Result received from results: ", result)
+		if result == nil {
+			return "nil"
+		} else {
+			id := result["_id"]
+			return id.(primitive.ObjectID).Hex()
+		}
+	}
+
+	return "nil"
+}
+
 func postMarks(c echo.Context) error {
 
 	StudentMarkEntry := StudentMarks{}
@@ -109,15 +152,54 @@ func postMarks(c echo.Context) error {
 			DBClient.Client.Database("StudentMarks").CreateCollection(DBClient.Context, currentSemester)
 		}
 
-		StudentMarkscollection := DBClient.Client.Database("StudentMarks").Collection(currentSemester)
+		studExists := checkStudentExists(StudentMarkEntry.StudentID, currentSemester)
 
-		result, err := StudentMarkscollection.InsertOne(DBClient.Context, StudentMarkEntry)
-		if err != nil {
-			fmt.Println("An error occured %s", err)
+		if studExists == "nil" {
+			fmt.Println("No results received")
+
+			StudentMarkscollection := DBClient.Client.Database("StudentMarks").Collection(currentSemester)
+
+			result, err := StudentMarkscollection.InsertOne(DBClient.Context, StudentMarkEntry)
+			if err != nil {
+				fmt.Println("An error occured %s", err)
+			} else {
+				fmt.Println("Insert result type: ", reflect.TypeOf(result))
+				fmt.Println("Insert APi result: ", result)
+			}
+
 		} else {
-			fmt.Println("Insert result type: ", reflect.TypeOf(result))
-			fmt.Println("Insert APi result: ", result)
+			fmt.Println("Results received: ", studExists)
+
+			objID, objerr := primitive.ObjectIDFromHex(studExists)
+			if objerr != nil {
+				panic(objerr)
+			}
+
+			// Find the document for which the _id field matches id and set the email to
+			// "newemail@example.com".
+			// Specify the Upsert option to insert a new document if a document matching
+			// the filter isn't found.
+			opts := options.FindOneAndUpdate().SetUpsert(true)
+			filter := bson.D{{"_id", objID}}
+			update := bson.D{{"$set", bson.D{{"mark", StudentMarkEntry.Mark}}}}
+			var updatedDocument bson.M
+			err := DBClient.Client.Database("StudentMarks").Collection(currentSemester).FindOneAndUpdate(
+				DBClient.Context,
+				filter,
+				update,
+				opts,
+			).Decode(&updatedDocument)
+			if err != nil {
+				// ErrNoDocuments means that the filter did not match any documents in
+				// the collection.
+				if err == mongo.ErrNoDocuments {
+					return err
+				}
+				log.Fatal(err)
+			}
+			fmt.Printf("updated document %v", updatedDocument)
 		}
+
 	}
 
 	return c.String(http.StatusOK, "Marks Entered into DB")
