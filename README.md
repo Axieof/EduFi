@@ -10,7 +10,7 @@ Each Service requires the Go [Echo Framework](https://echo.labstack.com/guide/) 
 with the database service needing the mongo driver package
 
 # Microservice Network Diagram
-![EduFi Architecture](https://github.com/Axieof/EduFi/blob/master/setup/EduFI_Network_Diagram_Final.png)
+![EduFi Architecture](https://github.com/Axieof/EduFi/blob/master/setup/EduFI_Network_Diagram_Final_Updated.png)
 
 For my contribution to EduFi, I have worked on the Marks Entry function of the Learning Management System.
 The marks Entry portion has the following requirements
