@@ -40,3 +40,36 @@ go run main.go
 ```
 
 # API Endpoints
+### Marks Service
+- GET (http://localhost:8121/api/V1/checkapi)
+```
+This route is to be used with a curl command to receive a reply if the server is up and running.
+```
+- POST (http://localhost:8121/api/V1/marksSubmit/:studentID)
+```
+This route is used when the Frontend service posts marks of a student entered by a tutor, to be processed
+by the Marks Service.
+```
+### Frontend Service
+- GET (http://localhost:8120/checkapi)
+```
+This route is to be used with a curl command to receive a reply if the server is up and running.
+```
+- GET (http://localhost:8120/marksDashboard/:tutorID)
+```
+This route is when the user attempts accesses the marks dashboard, with their ID passed as a query parameter.
+The user will then be greeted with a UI screen of the Modules, Classes and Students that they teach, and then they can provide marks to each student.
+```
+- POST (http://localhost:8120/marksEntry/:studentID)
+```
+This route is when the tutor submits a mark of a student, which then posts to this route within the Frontend service to be processed and sent to the Marks service.
+```
+### Database Service
+- GET (http://localhost:8129/api/V1/checkapi)
+```
+This route is to be used with a curl command to receive a reply if the server is up and running.
+```
+- POST (http://localhost:8129/api/V1/database/postMarks)
+```
+This route is used when the database service has received marks of a student from the Student service, which then gets processed and sent of to the mongo database container
+```
