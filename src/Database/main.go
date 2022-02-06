@@ -19,6 +19,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+// Struct to Initialize Studentmarks
 type StudentMarks struct {
 	StudentID   string `json: StudentID`
 	StudentName string `json: StudentName`
@@ -31,11 +32,13 @@ type StudentMarks struct {
 	dateUpdated string `json: dateUpdated`
 }
 
+// Struct to Initialize DatabaseClient for database
 type DatabaseClient struct {
 	Client  mongo.Client
 	Context context.Context
 }
 
+// Function to generate Next Sem Start Date
 func generateNextSemStartDate() time.Time {
 	var currentDate = time.Now()
 	var daysUntilMon = (1 - int(currentDate.Weekday()) + 7) % 7
@@ -44,11 +47,13 @@ func generateNextSemStartDate() time.Time {
 	return semStartDate
 }
 
+// Function to generate Next Sem End Date
 func generateNextSemEndDate(semStartDate time.Time) time.Time {
 	semEndDate := semStartDate.AddDate(0, 0, 4)
 	return semEndDate
 }
 
+// Function to get current semester start date
 func getCurrentSemStart() time.Time {
 	var nowdate = time.Now()
 	var nowint = int(nowdate.Weekday())
@@ -60,6 +65,7 @@ func getCurrentSemStart() time.Time {
 	return after
 }
 
+// Function to set HTTP server header
 func ServeHeader(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		c.Response().Header().Set(echo.HeaderServer, "Uni_LMS_Marks_Entry/1.0")
@@ -68,6 +74,7 @@ func ServeHeader(next echo.HandlerFunc) echo.HandlerFunc {
 	}
 }
 
+// Function to check if semester collection already exists
 func checkCollectionExists(semester string) bool {
 	DBClient := connectToDB()
 
@@ -89,6 +96,7 @@ func checkCollectionExists(semester string) bool {
 	return false
 }
 
+// Convert primitive M datatype from mogno to string
 func sliceToString(values []primitive.M) string {
 	s := make([]string, len(values)) // Pre-allocate the right size
 	for index := range values {
@@ -97,6 +105,7 @@ func sliceToString(values []primitive.M) string {
 	return strings.Join(s, ",")
 }
 
+// Function to check if student exists
 func checkStudentExists(studentID string, collection string) string {
 	DBClient := connectToDB()
 
@@ -130,6 +139,7 @@ func checkStudentExists(studentID string, collection string) string {
 	return "nil"
 }
 
+// Function to post marks to mongodb database
 func postMarks(c echo.Context) error {
 
 	StudentMarkEntry := StudentMarks{}
@@ -141,17 +151,18 @@ func postMarks(c echo.Context) error {
 		log.Fatalf("Failed reading the request body %s", err)
 	} else {
 		DBClient := connectToDB()
-
 		currentSemester := StudentMarkEntry.Schedule
-
 		fmt.Println(currentSemester)
 
+		// Check if collection exists for semester
 		colExists := checkCollectionExists(currentSemester)
 
 		if !colExists {
+			// Create colelction if does not exist
 			DBClient.Client.Database("StudentMarks").CreateCollection(DBClient.Context, currentSemester)
 		}
 
+		// Check if student record exists in collection
 		studExists := checkStudentExists(StudentMarkEntry.StudentID, currentSemester)
 
 		if studExists == "nil" {
@@ -159,6 +170,7 @@ func postMarks(c echo.Context) error {
 
 			StudentMarkscollection := DBClient.Client.Database("StudentMarks").Collection(currentSemester)
 
+			// Insert new record if student does not exist
 			result, err := StudentMarkscollection.InsertOne(DBClient.Context, StudentMarkEntry)
 			if err != nil {
 				fmt.Println("An error occured %s", err)
@@ -168,6 +180,7 @@ func postMarks(c echo.Context) error {
 			}
 
 		} else {
+			// Update existing student record if exists
 			fmt.Println("Results received: ", studExists)
 
 			objID, objerr := primitive.ObjectIDFromHex(studExists)
@@ -175,8 +188,8 @@ func postMarks(c echo.Context) error {
 				panic(objerr)
 			}
 
-			// Find the document for which the _id field matches id and set the email to
-			// "newemail@example.com".
+			// Find the document for which the _id field matches id and set the mark to
+			// mark received.
 			// Specify the Upsert option to insert a new document if a document matching
 			// the filter isn't found.
 			opts := options.FindOneAndUpdate().SetUpsert(true)
@@ -217,6 +230,7 @@ func toBSON(v interface{}) (doc *bson.Document, err error) {
 }
 */
 
+// Funcion to connect to database and get client and context
 func connectToDB() DatabaseClient {
 	credential := options.Credential{
 		Username: "admin",
@@ -242,6 +256,7 @@ func connectToDB() DatabaseClient {
 	return DBClient
 }
 
+// Function to check if previous sem is current sem
 func checkNewSem(prevsem time.Time, cursem time.Time) time.Time {
 	if prevsem != cursem {
 		prevsem = cursem
@@ -250,6 +265,7 @@ func checkNewSem(prevsem time.Time, cursem time.Time) time.Time {
 	return prevsem
 }
 
+// Function to check if service is up and running
 func checkAPI(c echo.Context) error {
 	fmt.Println("Database Service has been pinged!")
 	fmt.Println("Sending reply...")
@@ -266,8 +282,8 @@ func main() {
 	e.Use(ServeHeader)
 	fmt.Println("HTTP Server Created")
 
-	fmt.Println(generateNextSemStartDate())
-	fmt.Println(generateNextSemEndDate(generateNextSemStartDate()))
+	fmt.Println("Next Sem Start Date: ", generateNextSemStartDate())
+	fmt.Println("Next Sem End Date: ", generateNextSemEndDate(generateNextSemStartDate()))
 
 	//Group API version one routes together
 	g := e.Group("/api/V1")
@@ -282,17 +298,21 @@ func main() {
 		}
 	}()
 
+	// Variables to store sem dates received from go fun channels
 	previoussemester := time.Now()
 	currentsemesterchan := make(chan time.Time)
 	currentsemester := <-currentsemesterchan
 
+	// Go func to update current semester
 	go func() {
 		currentsem := getCurrentSemStart()
 		currentsemesterchan <- currentsem
 	}()
 
+	// Update previous semester
 	previoussemester = checkNewSem(previoussemester, currentsemester)
 
+	// Go func to print current and previous semester if updated
 	go func() {
 		fmt.Println(currentsemester)
 		fmt.Println(previoussemester)
