@@ -89,7 +89,7 @@ func marksSubmit(c echo.Context) error {
 
 		responsebody := bytes.NewBuffer(postBody)
 
-		url := "http://localhost:8129/api/V1/database/postMarks"
+		url := "http://10.31.11.11:8129/api/V1/database/postMarks"
 
 		resp, err := http.Post(url, "application/json", responsebody)
 

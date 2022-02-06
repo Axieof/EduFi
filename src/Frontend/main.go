@@ -427,7 +427,7 @@ func marksEntry(c echo.Context) error {
 	responsebody := bytes.NewBuffer(postBody)
 
 	// Send json to the following url
-	url := "http://localhost:8121/api/V1/marksSubmit/" + studentID
+	url := "http://10.31.11.11:8121/api/V1/marksSubmit/" + studentID
 
 	resp, err := http.Post(url, "application/json", responsebody)
 
