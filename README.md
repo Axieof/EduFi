@@ -10,6 +10,42 @@ Each Service requires the Go [Echo Framework](https://echo.labstack.com/guide/) 
 with the database service needing the mongo driver package
 
 # Microservice Network Diagram
+![EduFi Architecture](https://github.com/Axieof/EduFi/blob/master/setup/EduFI_Network_Diagram.png)
+
+For my contribution to EduFi, I have worked on the Marks Entry function of the Learning Management System.
+The marks Entry portion has the following requirements
+- List all Modules tought by Tutor
+- List all Classes tought by Tutor
+- List all Students tought by Tutor
+- View Marks of Students
+- Update Marks of Students
+- Deposit Tokens of Equivalent Value into Student's Wallet
+
+As EduFi is made of up many microservices working together, my microservice does act as a start point. 
+Instead, a user would log in as a tutor through the Authentication service and select marks entry from
+a navigation bar in order to access my service. 
+
+1. Upon accessing my service, the authentication service 
+passes the tutor's Identification number to my Frontend service.
+
+2. My Frontend then sends the Tutor ID to the Tutor Service to receive information on the tutor such as
+modules, classes and students taught. 
+
+3. The Frontend service then uses the information received on the tutor to present the user with a
+User Interface displaying the modules, classes and students taught. 
+
+4. The Tutor can then enter marks for a student from a class they teach and submit the mark.
+
+5. The mark then gets submtited back to the frontend service, which then adds the mark submitted along with
+the tutor's and student's information to the Marks service.
+
+6. The Marks service then processes the information and sends the information to 2 services
+- The Marks service sends the information to the Database service to be added into the Marks Entry service
+- The Marks service sends the information to the Wallet service to provide the student with tokens corresponding to module
+
+7. The Database service then calculates the current semester date and sends the information to the Mongo database to be stored within a colelction named after the current semester.
+
+8. All services send a erply according to the service that calls them, to confirm that the mark has been added to the database, as well as sent to the Wallet microservice.
 
 FrontEnd Service Setup Commands
 
