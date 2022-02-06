@@ -19,21 +19,25 @@ import (
 
 //var tutorRoute string = "http://localhost:803?/"
 //var moduleRoute string = "http://localhost:811?/"
-var marksEntryRoute string = "http://localhost:8121/api/V1/marksSubmit"
+//var marksEntryRoute string = "http://localhost:8121/api/V1/marksSubmit"
 
+// Struct to render html templates
 type TemplateRenderer struct {
 	templates *template.Template
 }
 
+// Struct to Initialize Module Information
 type Module struct {
 	ModuleCode string
 	ModuleName string
 }
 
+// Struct to Initialize List of Modules
 type ModuleList struct {
 	List []Module
 }
 
+// Struct to Initialize Class
 type Class struct {
 	ClassCode string
 	Schedule  string
@@ -41,10 +45,12 @@ type Class struct {
 	Capacity  string
 }
 
+// Struct to Initialize list of Class
 type ClassList struct {
 	List []Class
 }
 
+// Struct to Initialize Students
 type Student struct {
 	StudentID      string
 	StudentName    string
@@ -55,10 +61,12 @@ type Student struct {
 	ClassForModule string
 }
 
+// Struct to Initialize List of Students
 type StudentList struct {
 	List []Student
 }
 
+// Struct to Initialize Tutor
 type Tutor struct {
 	TutorID        string
 	TutorName      string
@@ -87,6 +95,7 @@ func ServeHeader(next echo.HandlerFunc) echo.HandlerFunc {
 	}
 }
 
+// Generate Date of Next Semester's Start Date
 func generateNextSemStartDate() time.Time {
 	var currentDate = time.Now()
 	var daysUntilMon = (1 - int(currentDate.Weekday()) + 7) % 7
@@ -95,6 +104,7 @@ func generateNextSemStartDate() time.Time {
 	return semStartDate
 }
 
+// Generate Date of Next Semester's End Date
 func generateNextSemEndDate(semStartDate time.Time) time.Time {
 	semEndDate := semStartDate.AddDate(0, 0, 4)
 	return semEndDate
@@ -254,22 +264,158 @@ func marksDashboard(c echo.Context) error {
 	Students.List = append(Students.List, tempStudent3)
 	Students.List = append(Students.List, tempStudent4)
 
+	// Tutor T0002
+	// Initialize variables
+	var Modules2 ModuleList
+	var Classes2 ClassList
+	var Students2 StudentList
+
+	// Temporary Data
+	temp2Module := Module{
+		ModuleCode: "SCS",
+		ModuleName: "Server and Cloud Security",
+	}
+
+	temp2Module2 := Module{
+		ModuleCode: "WEB",
+		ModuleName: "Web Developnment",
+	}
+
+	temp2Module3 := Module{
+		ModuleCode: "DL",
+		ModuleName: "Deep Learning",
+	}
+
+	Modules2.List = append(Modules.List, temp2Module)
+	Modules2.List = append(Modules.List, temp2Module2)
+	Modules2.List = append(Modules.List, temp2Module3)
+
+	temp2Class := Class{
+		ClassCode: "SCS001",
+		Schedule:  "17-01-2022",
+		Capacity:  "10",
+	}
+
+	temp2Class2 := Class{
+		ClassCode: "SCS002",
+		Schedule:  "17-01-2022",
+		Capacity:  "20",
+	}
+
+	temp2Class3 := Class{
+		ClassCode: "SCS001",
+		Schedule:  "17-01-2022",
+		Capacity:  "10",
+	}
+
+	temp2Class4 := Class{
+		ClassCode: "WEB002",
+		Schedule:  "17-01-2022",
+		Capacity:  "5",
+	}
+
+	Classes2.List = append(Classes.List, temp2Class)
+	Classes2.List = append(Classes.List, temp2Class2)
+	Classes2.List = append(Classes.List, temp2Class3)
+	Classes2.List = append(Classes.List, temp2Class4)
+
+	temp2Student := Student{
+		StudentID:      "S003",
+		StudentName:    "Caleb Goh",
+		DOB:            "Someday",
+		Address:        "Someplace",
+		PhoneNumber:    "1234",
+		ModuleEnrolled: "ADB",
+		ClassForModule: "ADB001",
+	}
+
+	temp2Student2 := Student{
+		StudentID:      "S004",
+		StudentName:    "Danny Chan",
+		DOB:            "Someday",
+		Address:        "Someplace",
+		PhoneNumber:    "5678",
+		ModuleEnrolled: "ADB",
+		ClassForModule: "ADB002",
+	}
+
+	temp2Student3 := Student{
+		StudentID:      "S005",
+		StudentName:    "Kenneth Teo",
+		DOB:            "Someday",
+		Address:        "Someplace",
+		PhoneNumber:    "7890",
+		ModuleEnrolled: "ETI",
+		ClassForModule: "ETI001",
+	}
+
+	temp2Student4 := Student{
+		StudentID:      "S006",
+		StudentName:    "Kah Ho",
+		DOB:            "Someday",
+		Address:        "Someplace",
+		PhoneNumber:    "6543",
+		ModuleEnrolled: "ETI",
+		ClassForModule: "ETI002",
+	}
+
+	temp2Student5 := Student{
+		StudentID:      "S007",
+		StudentName:    "Dong Kiat",
+		DOB:            "Someday",
+		Address:        "Someplace",
+		PhoneNumber:    "6543",
+		ModuleEnrolled: "ETI",
+		ClassForModule: "ETI002",
+	}
+
+	Students2.List = append(Students.List, temp2Student)
+	Students2.List = append(Students.List, temp2Student2)
+	Students2.List = append(Students.List, temp2Student3)
+	Students2.List = append(Students.List, temp2Student4)
+	Students2.List = append(Students.List, temp2Student5)
+
+	TutorName := TutorInfo.TutorID
+	TutorID := tutorID
+	ClassesVar := Classes2
+	StudentsVar := Students2
+	ModulesVar := Modules2
+
+	if tutorID == "T0002" {
+		TutorName = "Mr Andy Tan"
+		TutorID = "T0002"
+		ClassesVar = Classes2
+		StudentsVar = Students2
+		ModulesVar = Modules2
+	} else {
+		TutorName = "Mr Wesley Tan"
+		TutorID = "T0001"
+		ClassesVar = Classes
+		StudentsVar = Students
+		ModulesVar = Modules
+	}
+
+	// Return render of marksDashboard.html
 	return c.Render(http.StatusOK, "marksDashboard.html", map[string]interface{}{
-		"TutorID":      TutorInfo.TutorID,
-		"Name":         TutorInfo.TutorName,
-		"ClassesList":  Classes.List,
-		"StudentsList": Students.List,
-		"ModulesList":  Modules.List,
+		"TutorID":      TutorID,
+		"Name":         TutorName,
+		"ClassesList":  ClassesVar.List,
+		"StudentsList": StudentsVar.List,
+		"ModulesList":  ModulesVar.List,
 	})
 }
 
+// Function to send marks entry by tutor back to frontend service to be processed
 func marksEntry(c echo.Context) error {
+	// Get studentID
 	studentID := c.Param("studentID")
-	fmt.Println("Posting marks for Student:" + studentID)
+	fmt.Println("Marks for Student received:" + studentID)
 
+	// Get Marks Entered by tutor
 	marksEntered := c.FormValue("Marks")
-	fmt.Println("Marks Entered: ", marksEntered)
+	fmt.Println("Marks Entered received: ", marksEntered)
 
+	// Get Student ID and Marks entered, and fake data of Schedule and TutorID
 	postBody, _ := json.Marshal(map[string]string{
 		"StudentID": studentID,
 		"Marks":     marksEntered,
@@ -277,8 +423,10 @@ func marksEntry(c echo.Context) error {
 		"TutorID":   "T0001",
 	})
 
+	// Buffer the json
 	responsebody := bytes.NewBuffer(postBody)
 
+	// Send json to the following url
 	url := "http://localhost:8121/api/V1/marksSubmit/" + studentID
 
 	resp, err := http.Post(url, "application/json", responsebody)
@@ -300,6 +448,7 @@ func marksEntry(c echo.Context) error {
 	return c.String(http.StatusOK, "Test")
 }
 
+// Function to check if service is up and running
 func checkAPI(c echo.Context) error {
 	fmt.Println("Frontend Service has been pinged!")
 	fmt.Println("Sending reply...")
