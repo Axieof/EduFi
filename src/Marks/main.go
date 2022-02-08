@@ -58,7 +58,7 @@ func marksSubmit(c echo.Context) error {
 	}
 
 	// Temporary Fake Data
-	tempModuleCode := "ADB"
+	//tempModuleCode := "ADB"
 
 	fmt.Println(tempStudent.StudentID)
 
@@ -107,38 +107,40 @@ func marksSubmit(c echo.Context) error {
 
 		fmt.Println(sb)
 
-		// Post to Marks Wallet
-		fmt.Println("Posting data to marks wallet")
+		/*
+			// Post to Marks Wallet
+			fmt.Println("Posting data to marks wallet")
 
-		postBodywallet, _ := json.Marshal(map[string]string{
-			"ttype": "Mark",
-			"sid":   "Mark",
-			"rid":   tempStudent.StudentID,
-			"ts":    "2022-02-06 12:51:34",
-			"tysm":  tempModuleCode,
-			"ta":    StudentMark.Marks,
-			"stat":  "ping",
-		})
+			postBodywallet, _ := json.Marshal(map[string]string{
+				"ttype": "Mark",
+				"sid":   "Mark",
+				"rid":   tempStudent.StudentID,
+				"ts":    "2022-02-06 12:51:34",
+				"tysm":  tempModuleCode,
+				"ta":    StudentMark.Marks,
+				"stat":  "ping",
+			})
 
-		responsebodywallet := bytes.NewBuffer(postBodywallet)
+			responsebodywallet := bytes.NewBuffer(postBodywallet)
 
-		urlwallet := "http://10.31.11.11:8053/Transaction/new"
+			urlwallet := "http://10.31.11.11:8053/Transaction/new"
 
-		respwallet, errwallet := http.Post(urlwallet, "application/json", responsebodywallet)
+			respwallet, errwallet := http.Post(urlwallet, "application/json", responsebodywallet)
 
-		if errwallet != nil {
-			log.Fatalf("An error occured %s", errwallet)
-		}
+			if errwallet != nil {
+				log.Fatalf("An error occured %s", errwallet)
+			}
 
-		defer respwallet.Body.Close()
+			defer respwallet.Body.Close()
 
-		bodywallet, err := ioutil.ReadAll(respwallet.Body)
-		if err != nil {
-			log.Fatalln(err)
-		}
-		sbwallet := string(bodywallet)
+			bodywallet, err := ioutil.ReadAll(respwallet.Body)
+			if err != nil {
+				log.Fatalln(err)
+			}
+			sbwallet := string(bodywallet)
 
-		fmt.Println(sbwallet)
+			fmt.Println(sbwallet)
+		*/
 	}
 
 	return c.String(http.StatusOK, "Marks Entered")
