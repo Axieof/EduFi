@@ -221,40 +221,40 @@ func marksDashboard(c echo.Context) error {
 
 	tempStudent := Student{
 		StudentID:      "S001",
-		StudentName:    "Guy1",
-		DOB:            "Someday",
-		Address:        "Someplace",
-		PhoneNumber:    "1234",
+		StudentName:    "Pritheev Roshan",
+		DOB:            "08-07-2002",
+		Address:        "Singapore, SIngapore",
+		PhoneNumber:    "1234 5678",
 		ModuleEnrolled: "ADB",
 		ClassForModule: "ADB001",
 	}
 
 	tempStudent2 := Student{
 		StudentID:      "S002",
-		StudentName:    "Guy2",
-		DOB:            "Someday",
-		Address:        "Someplace",
-		PhoneNumber:    "5678",
+		StudentName:    "Caleb Goh",
+		DOB:            "06-09-2002",
+		Address:        "Singapore, Singapore",
+		PhoneNumber:    "5678 8357",
 		ModuleEnrolled: "ADB",
 		ClassForModule: "ADB002",
 	}
 
 	tempStudent3 := Student{
 		StudentID:      "S003",
-		StudentName:    "Guy3",
-		DOB:            "Someday",
-		Address:        "Someplace",
-		PhoneNumber:    "7890",
+		StudentName:    "Danny Chan",
+		DOB:            "04-06-2002",
+		Address:        "Singapore, Singapore",
+		PhoneNumber:    "7890 2856",
 		ModuleEnrolled: "ETI",
 		ClassForModule: "ETI001",
 	}
 
 	tempStudent4 := Student{
 		StudentID:      "S004",
-		StudentName:    "Guy4",
-		DOB:            "Someday",
-		Address:        "Someplace",
-		PhoneNumber:    "6543",
+		StudentName:    "Kenneth Teo",
+		DOB:            "01-07-2002",
+		Address:        "Singapore, Singapore",
+		PhoneNumber:    "6543 3689",
 		ModuleEnrolled: "ETI",
 		ClassForModule: "ETI002",
 	}
@@ -445,7 +445,7 @@ func marksEntry(c echo.Context) error {
 
 	fmt.Println(sb)
 
-	return c.String(http.StatusOK, "Test")
+	return c.String(http.StatusOK, "Marks added!")
 }
 
 // Function to check if service is up and running
